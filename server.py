@@ -17,7 +17,7 @@ metrics = PrometheusMetrics(app)
 db = []
 
 
-@app.route('/health')
+@app.route('/health')  #TODO remove this endpoint when done debugging
 def hello_world():
     return 'OK'
 
