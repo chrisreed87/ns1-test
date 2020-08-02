@@ -1,11 +1,3 @@
-# [X] 1. accepts a POST to /messages, contents of the message should be a string
-# [X] 2. response to the POST should be a SHA 
-# [] 3. a get to /messages/<SHA> should return the message
-# [X] 4. /metrics should return some kind of metrics
-# [X] 5. Wrap it in a Dockerfile
-# [] 6. README how to run
-
-
 from flask import Flask, jsonify, request, abort
 from flask_hashing import Hashing
 from prometheus_flask_exporter import PrometheusMetrics
@@ -15,11 +7,6 @@ hashing = Hashing(app)
 metrics = PrometheusMetrics(app)
 
 db = []
-
-
-@app.route('/health')  #TODO remove this endpoint when done debugging
-def hello_world():
-    return 'OK'
 
 
 @app.route('/messages', methods=['POST'])
@@ -33,15 +20,12 @@ def post_messages():
   return jsonify({'digest': val_hash}), 201
 
 
-@app.route('/messages', methods=['GET']) #TODO remove this endpoint when done debugging
-def get_db():
-  return jsonify({'db': db})
-
-
 @app.route('/messages/<string:db_id>', methods=['GET'])
 def get_messages(db_id):
   message = [message for message in db if message['id'] == db_id]
-  return message[0] #TODO need to figure out how to filter just the message piece
+  if len(message) == 0:
+    return jsonify({"error": "unable to find message", "message_sha256": db_id }), 404
+  return message[0]
 
 
 if __name__ == '__main__':
